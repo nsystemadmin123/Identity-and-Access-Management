@@ -1,0 +1,37 @@
+
+# Connect to Microsoft Graph
+Connect-MgGraph -Scopes "GroupMember.ReadWrite.All", "User.Read.All"
+
+# Path to the text file
+$userListPath = "CSV PATH"
+
+# Microsoft 365 Group ID
+$groupId = "$GroupId = "<ENTRA_ID_GROUP_OBJECT_ID>"
+
+# Read user emails from the file
+$userEmails = Get-Content -Path $userListPath
+foreach ($email in $userEmails) {
+    try {
+        # Trim any whitespace from email
+        $email = $email.Trim()
+
+        # Get the user object
+        $user = Get-MgUser -UserId $email
+
+        # Add the user to the group
+        New-MgGroupMember -GroupId $groupId -DirectoryObjectId $user.Id
+        Write-Host "✅ Added ${email} to the group."
+    } catch {
+        Write-Warning "❌ Failed to add ${email}: $_"
+        Add-Content -Path "PATH\errorlog.txt" -Value "Failed to add ${email}: $_"
+    }
+}
+
+
+
+
+
+
+
+
+
